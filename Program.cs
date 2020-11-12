@@ -39,9 +39,9 @@ namespace JordanTables
         /// <summary>
         /// Make Jordan step
         /// </summary>
-        /// <param name="coef"></param>
-        /// <param name="ind1"></param>
-        /// <param name="ind2"></param>
+        /// <param name="coef">Модифицированная Жорданова таблица</param>
+        /// <param name="ind1">Строка разрешеющего элемента(отсчет с 0)</param>
+        /// <param name="ind2">Столбец разрешеющего элемента(отсчет с 0)</param>
         /// <returns></returns>
         static double[][] JordanStep(double[][] coef, int ind1, int ind2)
         {
@@ -71,7 +71,15 @@ namespace JordanTables
             }
             return ans;
         }
-
+        /// <summary>
+        /// Make Jordan step with remove
+        /// </summary>
+        /// <param name="coef">Модифицированная Жорданова таблица</param>
+        /// <param name="ind1">Строка разрешеющего элемента(отсчет с 0)</param>
+        /// <param name="ind2">Столбец разрешеющего элемента(отсчет с 0)</param>
+        /// <param name="indi">Массив индексов строк для удаления</param>
+        /// <param name="indj">Массив индексов столбцов для удаления</param>
+        /// <returns></returns>
         static double[][] JordanStep(double[][] coef, int ind1, int ind2, int[] indi, int[] indj)
         {
             double[][] jor = JordanStep(coef, ind1, ind2);
@@ -112,6 +120,12 @@ namespace JordanTables
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Сравнивает таблицы, выводит на консоль и подсвечивает несоответствия
+        /// </summary>
+        /// <param name="jor1">первая таблица</param>
+        /// <param name="jor2">вторая таблица</param>
+        /// <param name="digits">точность сравнения и вывода(кол-во знаков после запятой)</param>
         static void Cmpr(double[][] jor1, double[][] jor2, int digits)
         {
             for (int i = 0; i < jor2.Length; i++)

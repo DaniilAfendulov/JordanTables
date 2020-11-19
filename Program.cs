@@ -8,30 +8,32 @@ namespace JordanTables
         {
             double[][] jor1 = new double[][]
             {
-                new double[]{ 5, 5,   1,   1,   3,   1 },      
-                new double[]{ 3, 0,   -2,  4  , 1 ,  1 },      
-                new double[]{ 2, 1 ,  -3  ,5  , 0 ,  0 },
-                new double[]{ 0, -7 ,  -1 ,  -1  , 1 , 0 },
-                new double[]{ -10, - 6,  4 ,- 10 ,- 4 ,- 2 }
+                DblArrConvert("104	8	13	0"),
+                DblArrConvert("208	26	16	0"),
+                DblArrConvert("6	1	0	-1"),
+                DblArrConvert("7	0	1	0"),
+                DblArrConvert("0	-6	-2	0")
             };
 
             // Шаги жорданова исключения
             Console.WriteLine("Изначальная таблица");
             Print(jor1);
-            Print(jor1=JordanStep(jor1,2,3, new int[] { }, new int[] { 3 }));
-            Print(jor1 = JordanStep(jor1, 1, 3, new int[] { }, new int[] { 3 }));
+            Print(jor1=JordanStep(jor1,2,1, new int[] { }, new int[] { 1 }));
+            //Print(jor1 = JordanStep(jor1, 1, 3, new int[] { }, new int[] { 3 }));
+            //Print(jor1 = JordanStep(jor1, 0, 1, new int[] { 4 }, new int[] { 1 }));
             //Print(jor1 = JordanStep(jor1, 0, 2));
             //Print(jor1 = JordanStep(jor1, 0, 3));
-            //Print(jor1 = SimplexMethod(jor1, true, new bool[] { true,true,true}));
+            Print(jor1 = SimplexMethod(jor1, true));
             Console.WriteLine("введенная таблица:");
             double[][] jor2 = new double[][]
             {
-                StrConvert("2/5	36/5	2/5	-2"),
-                StrConvert("7/5     	-4/5    	2/5    	1"),
-                StrConvert("2/5	1/5	-3/5	0"),
-                StrConvert("-1	-6	-2	-1"),
-                StrConvert("-2/5	-36/5	-2/5	2")
+                DblArrConvert("40	105/13	-4/13"),
+                DblArrConvert("2	8/13	1/26"),
+                DblArrConvert("8	8/13	1/26"),
+                DblArrConvert("7	1	0"),
+                DblArrConvert("48	22/13	3/13")
             };
+            //Print(jor2);
             Cmpr(jor1, jor2, 3);
             Console.ReadLine();
         }
@@ -227,6 +229,15 @@ namespace JordanTables
             }
             return coef;
         }
+        static double[][] SimplexMethod(double[][] coef, bool Max)
+        {
+            bool[] isFree = new bool[coef.Length];
+            for (int i = 0; i < isFree.Length; i++)
+            {
+                isFree[i] = false;
+            }
+            return SimplexMethod(coef,Max,isFree);
+        }
 
         static bool[] FreeRows(int[] fr, int n)
         {
@@ -263,7 +274,7 @@ namespace JordanTables
             }
             return ans;
         }*/
-        static double[] StrConvert(string str)
+        static double[] DblArrConvert(string str)
         {
             string[] columns = str.Split(new char[] { '\t' });
             double[] ans = new double[columns.Length];

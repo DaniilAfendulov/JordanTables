@@ -8,33 +8,34 @@ namespace JordanTables
         {
             double[][] jor1 = new double[][]
             {
-                new double[]{ 9, 1,   0,   0,   6},      // x4
-                new double[]{2,  3,   1,   -4,  2},      // x7
-                new double[]{6,  1,   2,   0,   2},      // x5       
-                new double[]{ 15,    1,   3, - 1,  9 },  //F=
-                new double[]{ 2, 3,   1, - 4,  2 }       //F=M
+                new double[]{ 5, 5,   1,   1,   3,   1 },      
+                new double[]{ 3, 0,   -2,  4  , 1 ,  1 },      
+                new double[]{ 2, 1 ,  -3  ,5  , 0 ,  0 },
+                new double[]{ 0, -7 ,  -1 ,  -1  , 1 , 0 },
+                new double[]{ -10, - 6,  4 ,- 10 ,- 4 ,- 2 }
             };
 
             // Шаги жорданова исключения
             Console.WriteLine("Изначальная таблица");
             Print(jor1);
-            Print(jor1 = JordanStep(jor1, 1, 1, new int[] { }, new int[] { 1 })); // с удалением 1 строки(отсчет с 0) // x1,x7
-            Print(jor1 = JordanStep(jor1, 1, 3, new int[] { 4 }, new int[] { })); // с удалением 4 столбца(отсчет с 0) //x1,x6
-            Print(jor1 = JordanStep(jor1, 0, 2)); //x1,x6
-            Print(jor1 = JordanStep(jor1, 2, 1)); //x4,x3
+            Print(jor1=JordanStep(jor1,2,3, new int[] { }, new int[] { 3 }));
+            Print(jor1 = JordanStep(jor1, 1, 3, new int[] { }, new int[] { 3 }));
+            //Print(jor1 = JordanStep(jor1, 0, 2));
+            //Print(jor1 = JordanStep(jor1, 0, 3));
+            //Print(jor1 = SimplexMethod(jor1, true, new bool[] { true,true,true}));
             Console.WriteLine("введенная таблица:");
             double[][] jor2 = new double[][]
             {
-                new double[]{ 5.0/8,   1.0/8, 1.0/24,    -7.0/12},//x3   
-                new double[]{ 3.0/2,   0,   1.0/6, 1.0/6},//x6
-                new double[]{ 3.0/2,   1.0/2, -1.0/6,    2.0/6},//x2
-                new double[]{ -19.0/8, - 11.0 / 8, - 23.0 / 24, - 25.0 / 12 }//F
+                StrConvert("2/5	36/5	2/5	-2"),
+                StrConvert("7/5     	-4/5    	2/5    	1"),
+                StrConvert("2/5	1/5	-3/5	0"),
+                StrConvert("-1	-6	-2	-1"),
+                StrConvert("-2/5	-36/5	-2/5	2")
             };
-            Print(jor2);
-
             Cmpr(jor1, jor2, 3);
             Console.ReadLine();
         }
+
 
         /// <summary>
         /// Make Jordan step
@@ -156,6 +157,127 @@ namespace JordanTables
                 }
             }
             return isEx;
+        }
+
+        static double[][] SimplexMethod(double[][] coef, bool Max, bool[] isFree)
+        {
+            int k = 5;
+            while(Max && k>0)
+            {
+                double max = -1;
+                int columnind = -1;
+                for (int j = 1; j < coef[coef.Length-1].Length; j++)
+                {
+                    double t = coef[coef.Length-1][j];
+                    if (t < 0 && Abs(t) > max)
+                    {
+                        max = Abs(t);
+                        columnind = j;
+                    }
+                }
+                if (columnind == -1) return coef;
+                int rowind = -1;
+                double min=0;
+                for (int i = 0; i < coef
+                    .Length; i++)
+                {
+                    double t = coef[i][columnind];
+                    if (t > 0)
+                    {
+                        if (rowind == -1)
+                        {
+                            rowind = i;
+                            min = coef[i][0] / t;
+                            continue;
+                        }
+                        if (coef[i][0] / t < min)
+                        {
+                            rowind = i;
+                            min = coef[i][0] / t;
+                        }
+                    }
+                }
+                if (rowind == -1) return coef;
+
+                for (int i = 0; i < coef.Length; i++)
+                {
+                    for (int j = 0; j < coef[i].Length; j++)
+                    {
+                        bool highlight = i == rowind && j == columnind;
+                        if (highlight)
+                        {
+                            Console.BackgroundColor = ConsoleColor.Blue;
+                            Console.Write(Round(coef[i][j], 2) + "\t");
+                            Console.ResetColor();
+                            continue;
+                        }
+                        Console.Write(Round(coef[i][j], 2) + "\t");
+                       
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+                if (isFree[rowind])
+                {
+                    isFree[rowind] = false;
+                    coef = JordanStep(coef, rowind, columnind, new int[] { }, new int[] { columnind });
+                }
+                else coef = JordanStep(coef, rowind,columnind);
+                k--;
+            }
+            return coef;
+        }
+
+        static bool[] FreeRows(int[] fr, int n)
+        {
+            bool[] ans = new bool[n];
+            for (int i = 0; i < ans.Length; i++)
+            {
+                for (int j = 0; j < fr.Length; j++)
+                {
+                    ans[i] = fr[j] == i;
+                    if (ans[i]) break;
+                }
+            }
+            return ans;
+        }
+
+        /*static double[][] StrConvert(string[] str)
+        {
+            string[] rows = str.Split(new char[] {'\n'});
+            double[][] ans = new double[rows.Length][];
+            for (int i = 0; i < rows.Length; i++)
+            {
+                string[] columns = rows[i].Split(new char[] { '\t' });
+                ans[i] = new double[columns.Length];
+                for (int j = 0; j < columns.Length; j++)
+                {
+                    if (columns[j].Contains("/"))
+                    {
+                        string[] fraction = columns[j].Split(new char[] { '/' });
+                        ans[i][j] = double.Parse(fraction[0]) / double.Parse(fraction[1]);
+                        continue;
+                    }
+                    ans[i][j] = double.Parse(columns[j]);
+                }
+            }
+            return ans;
+        }*/
+        static double[] StrConvert(string str)
+        {
+            string[] columns = str.Split(new char[] { '\t' });
+            double[] ans = new double[columns.Length];
+            for (int i = 0; i < columns.Length; i++)
+            {
+                if (columns[i].Contains("/"))
+                {
+                    string[] fraction = columns[i].Split(new char[] { '/' });
+                    ans[i] = double.Parse(fraction[0]) / double.Parse(fraction[1]);
+                    continue;
+                }
+                ans[i] = double.Parse(columns[i]);
+            }
+            return ans;
         }
     }
 }
